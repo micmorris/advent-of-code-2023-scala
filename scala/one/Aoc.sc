@@ -4,6 +4,7 @@ import mainargs.main
 import os._
 
 import java.io.{BufferedReader, InputStreamReader}
+import scala.annotation.tailrec
 import scala.language.postfixOps
 
 val USAGE =
@@ -20,7 +21,7 @@ def main(part: String, maybeFilename: Option[String]): Int = {
     case ("test", _) =>
       Test.runAllTests
     case ("p1", Some(filename)) =>
-      Aoc.run1(Setup.readInput(filename))
+      Aoc.run1(Setup.readInput(filename), List.empty.toStream)
     case ("p2", Some(filename)) =>
       Aoc.run2(Setup.readInput(filename))
     case _ =>
@@ -31,24 +32,43 @@ def main(part: String, maybeFilename: Option[String]): Int = {
 
 object Aoc {
 
-  def run1(input: Stream[String]): Int = {
-    input
+  def run1(input: Stream[String], original: Stream[String]): Int = {
+    val inputList = input.toList
+    val values = inputList
       .map(line =>
           line.find(_.isDigit)
             .get
             .toString
             .concat(line.findLast(_.isDigit).get.toString)
             .toInt
-      ).sum
+      )
+//    println("Calibrations:")
+//    original.zipAll(values, "", 0)
+//      .foreach(println)
+    values.sum
   }
 
   def run2(input: Stream[String]): Int = {
-    val lines = input.toList
-      .map(
-        _.split("")
-          .map(_.toInt)
-      )
-    ???
+    val modifiedInput = input.map(line => findNextNumber("", line)).toList
+//    modifiedInput.foreach(println)
+    run1(modifiedInput.toStream, input)
+  }
+
+  @tailrec
+  def findNextNumber(parsedString: String, currString: String): String = {
+    currString match {
+      case "" => parsedString
+      case str if str.startsWith("one") => findNextNumber(parsedString + "1" + str.charAt(0), str.substring(1))
+      case str if str.startsWith("two") => findNextNumber(parsedString + "2" + str.charAt(0), str.substring(1))
+      case str if str.startsWith("three") => findNextNumber(parsedString + "3" + str.charAt(0), str.substring(1))
+      case str if str.startsWith("four") => findNextNumber(parsedString + "4" + str.charAt(0), str.substring(1))
+      case str if str.startsWith("five") => findNextNumber(parsedString + "5" + str.charAt(0), str.substring(1))
+      case str if str.startsWith("six") => findNextNumber(parsedString + "6" + str.charAt(0), str.substring(1))
+      case str if str.startsWith("seven") => findNextNumber(parsedString + "7" + str.charAt(0), str.substring(1))
+      case str if str.startsWith("eight") => findNextNumber(parsedString + "8" + str.charAt(0), str.substring(1))
+      case str if str.startsWith("nine") => findNextNumber(parsedString + "9" + str.charAt(0), str.substring(1))
+      case str => findNextNumber(parsedString + str.charAt(0), str.substring(1))
+    }
   }
 
 }
