@@ -33,11 +33,7 @@ object Aoc {
   import GamePieces._
 
   def run1(input: Stream[String]): Int = {
-    val linePattern = "Game (\\d+): (.*)".r
-    val games = input.map {
-      case linePattern(gameId, gamesText) => parseGame(gamesText, gameId.toInt)
-      case _                              => ???
-    }
+    val games = parseAllGames(input)
 
     val possibleGoodGameIds = games.map {
       case game if game.redPulls.exists(_ > 12) => 0
@@ -46,9 +42,40 @@ object Aoc {
       case game => game.id
     }
 
-    println("Game outcomes:")
-    possibleGoodGameIds.filter(_ > 0).foreach(println)
+//    println("Game outcomes:")
+//    possibleGoodGameIds.filter(_ > 0).foreach(println)
     possibleGoodGameIds.sum
+  }
+
+  def run2(input: Stream[String]): Int = {
+    val games = parseAllGames(input)
+    games.map(game => game.redPulls.max * game.greenPulls.max * game.bluePulls.max)
+      .sum
+  }
+
+}
+
+object Test {
+
+  def runAllTests: Int = {
+    testThing
+    0
+  }
+
+  private def testThing: Unit = {
+    assert(true)
+  }
+}
+
+object GamePieces {
+  case class Game(id: Int, redPulls: List[Int], greenPulls: List[Int], bluePulls: List[Int])
+
+  def parseAllGames(input: Stream[String]): Stream[Game] = {
+    val linePattern = "Game (\\d+): (.*)".r
+    input.map {
+      case linePattern(gameId, gamesText) => parseGame(gamesText, gameId.toInt)
+      case _                              => ???
+    }
   }
 
   def parseGame(gamesText: String, id: Int): Game = {
@@ -74,27 +101,6 @@ object Aoc {
       bluePulls = pullsMap.getOrElse("blue", List.empty[Int])
     )
   }
-
-  def run2(input: Stream[String]): Int = {
-    ???
-  }
-
-}
-
-object Test {
-
-  def runAllTests: Int = {
-    testThing
-    0
-  }
-
-  private def testThing: Unit = {
-    assert(true)
-  }
-}
-
-object GamePieces {
-  case class Game(id: Int, redPulls: List[Int], greenPulls: List[Int], bluePulls: List[Int])
 }
 
 object Setup {
